@@ -107,7 +107,7 @@ public class Tokenizer {
     /**
      * Returns a LinkedList of type Token
      *
-     * @return
+     * @return tokens a LinkedList of Tokens
      */
     public LinkedList<Token> getTokens() {
         return tokens;
