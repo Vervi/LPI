@@ -1,21 +1,29 @@
+import plc.ll1.Tokenizer.ParseException;
+
+import java.util.LinkedList;
+import plc.ll1.Tokenizer.*;
+
 public class Main {
 
     public static void main(String[] args) {
         Tokenizer tk = new Tokenizer();
         go(tk);
-
+        LinkedList<Tokenizer.Token> tokens;
         System.out.println("let's test out some assignments...");
         try {
             Thread.sleep(650);
             tk.tokenize("x =1;");
+            tokens=tk.getTokens();
+            for (Tokenizer.Token t: tokens)
+                  {
+                System.out.println(t.name+ " " + t.token);
+            }
 
-            for (Tokenizer.Token tok : tk.getTokens()) {
+            tk.interpret(); //it looks like this might run
+
+               for (Tokenizer.Token tok : tokens) {
                 System.out.println("Current token is:" + tok.token + " of type " + tok.name);
                 Thread.sleep(650);
-
-                //Interpret.program();
-
-
             }
         }//2 secs
         catch (InterruptedException e) {

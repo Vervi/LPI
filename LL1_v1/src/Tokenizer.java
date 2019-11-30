@@ -1,4 +1,6 @@
-import java.util.LinkedList;
+import plc.ll1.Tokenizer.ParseException;
+
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -112,6 +114,104 @@ public class Tokenizer {
     public LinkedList<Token> getTokens() {
         return tokens;
     }
+
+    //code above this point works properly
+
+    /**
+     *
+     */
+    //public class Interpreter {
+        /*create a method to handle the parsing/interpretation
+         */
+        HashMap<String, Integer> memory;
+        Token input;
+        Iterator <Token> itr;
+        String current;
+
+        //to make life easier, refer to tokens by their type(number) not name
+        void match(int expected){
+            if (input.type != expected ){
+                throw new ParseException("we weren't expecting to see "+ input.token + " here.");
+            }
+        }
+
+        //this gets called first
+        void interpret(){
+            //input = tokens.element(); //set the token stream to the first token
+            itr = tokens.iterator();
+            program();
+
+        }
+
+        void next(){
+            try{
+                input=itr.next();
+                current= input.token;
+
+            }
+            catch(NoSuchElementException e)
+            {
+            input=null;
+            }
+
+        }
+
+        void program(){
+            assignment();
+        }
+
+
+/*see if next token is an identifier if its not throw an error
+if it is a valid id consume token
+and look at the next one, match the '=' token
+if it fails throw an error else consume and look at next token
+call expr (it will return what it should or throw an error thats dealt with elsewhere)
+match the ";" token, if it fails throw an error
+*/
+
+        void assignment(){
+
+
+        }
+
+        /*currently debating what the return type for each method should be
+         maybe program and assignment should be void
+         and the rest should return a token?
+        */
+        void expr(){
+
+
+
+        }
+
+        void expr_pr(){
+
+
+
+
+        }
+
+        void term(){
+
+
+
+        }
+
+        void term_pr(){
+
+
+        }
+
+        void fact(){
+
+
+        }
+
+
+
+  //  } took the interpreter stuff out of the interpret subclass to nix static vs nonstatic issue
+
+
 
 
 }
