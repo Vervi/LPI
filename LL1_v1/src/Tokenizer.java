@@ -3,20 +3,22 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *          Blueprint of Tokenizer class/object
+ * Blueprint of Tokenizer class/object
  */
 public class Tokenizer {
 
     private class TokenDatum {
+
         public final Pattern regex;
         public final int type;
         public final String name;
 
         /**
-         *          Constructor for TokenDatum class/object
-         * @param regex
-         * @param type
-         * @param name
+         * Constructor for TokenDatum class/object
+         *
+         * @param regex the regex
+         * @param type  the type
+         * @param name  the name
          */
         public TokenDatum(Pattern regex, int type, String name) {
             super();
@@ -27,18 +29,20 @@ public class Tokenizer {
     }
 
     /**
-     *          Blueprint of inner Token Class
+     * Blueprint of inner Token Class
      */
     public class Token {
+
         public final int type;
         public final String token;
         public final String name;
 
         /**
-         *          Constructor for Token class/object.
-         * @param type
-         * @param token
-         * @param name
+         * Constructor for Token class/object.
+         *
+         * @param type  the type
+         * @param token the token
+         * @param name  the name
          */
         public Token(int type, String token, String name) {
             super();
@@ -52,7 +56,7 @@ public class Tokenizer {
     private LinkedList<Token> tokens;
 
     /**
-     *     Constructor for Tokenizer objects
+     * Constructor for Tokenizer objects
      */
     public Tokenizer() {
         tokenData = new LinkedList<TokenDatum>();
@@ -60,24 +64,26 @@ public class Tokenizer {
     }
 
     /**
-     *          A helper method for adding tokenization rules to our tokenizer object
-     * @param regex
-     * @param type
-     * @param name
+     * A helper method for adding tokenization rules to our tokenizer object
+     *
+     * @param regex the regex
+     * @param type  the type
+     * @param name  the name
      */
     public void add(String regex, int type, String name) {
         tokenData.add(new TokenDatum(Pattern.compile("^(" + regex + ")"), type, name));
     }
 
     /**
-     *          Tokenize(str) takes in a string to be turned into tokens.
-     *          It sets a default flag value (match) to false then for each
-     *          possible token in the string, it sees if the token currently being looked at is a match
-     *          to any of the regex's stored in the tokenizer if it is, the flag is switched to true
-     *          the token is added to the token LinkedList, it's is replaced by the "" character,leading whitespace is trimmed
-     *          and the next token is evaluated
-     *          if it doesn't match, an exception is raised and tells the console what unexpected value appeared
-     * @param str
+     * Tokenize(str) takes in a string to be turned into tokens.
+     * It sets a default flag value (match) to false then for each
+     * possible token in the string, it sees if the token currently being looked at is a match
+     * to any of the regex's stored in the tokenizer if it is, the flag is switched to true
+     * the token is added to the token LinkedList, it's is replaced by the "" character,leading whitespace is trimmed
+     * and the next token is evaluated
+     * if it doesn't match, an exception is raised and tells the console what unexpected value appeared
+     *
+     * @param str the str
      */
     public void tokenize(String str) {
         String s = str.trim();
@@ -99,8 +105,9 @@ public class Tokenizer {
     }
 
     /**
-     *          Returns a LinkedList of type Token
-     * @return LinkedList<Token>
+     * Returns a LinkedList of type Token
+     *
+     * @return
      */
     public LinkedList<Token> getTokens() {
         return tokens;
