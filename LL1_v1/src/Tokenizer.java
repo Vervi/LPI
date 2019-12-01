@@ -120,17 +120,13 @@ public class Tokenizer {
     /**
      *
      */
-        HashMap<String, Integer> memory; //may need to change this to a set to avoid duplicate identifiers
+        HashMap<String, Integer> memory; //no duplicate keys but will allow dup null values
      private Token input;
+     private Iterator <Token> itr;
+     private String current;
+     private Integer t_type;
 
-        Token eoi;
-
-        private Iterator <Token> itr;
-        String current;
-        Integer t_type;
-
-
-        //to make life easier, refer to tokens by their type(number) not name
+         //to make life easier, refer to tokens by their type(number) not name
         void match(Integer expected){
             if (input.type != expected ){
                 error();
@@ -140,16 +136,14 @@ public class Tokenizer {
         }
         void error(){
             throw new ParseException("we weren't expecting to see "+ input.token + " here.");
-
         }
-        //this gets called first
+
         void interpret(){
-            //input = tokens.element(); //set the token stream to the first token
             itr = tokens.iterator();
             next();
-            System.out.println("iterator itr val is pointing to: "+ current );
+            System.out.println("itr initially points to to: "+ current );
             program();
-
+               // System.out.println("program ended successfully");
         }
 
         void next(){
@@ -168,136 +162,165 @@ public class Tokenizer {
 
         void program(){
             assignment();
+            System.out.println("program ended successfully");
+         //   match(10);
         }
     //1 ID, 2 =, 3 Lit, 4 +, 5 -, 6 *, 7 (, 8 ), 9 ;
         void assignment(){
-
+            System.out.println("enter assignment...");
            switch(t_type){
                 case 1:
                 match(1); //passes
-                    System.out.println("assignment case 1 match yields: "+ current );
+              //      System.out.println("assignment case 1 match yields: "+ current );
                 match(2); //passes
-                    System.out.println("assignment case 2 match yields: "+ current );
-                expr(); System.out.println("assignment ->match -> expr yields "+current);
+                //    System.out.println("assignment case 2 match yields: "+ current );
+                expr();
+                //    System.out.println("assignment ->match -> expr yields "+current);
                 match(9);
-                    System.out.println("assignment ->match -> expr -> match 9 yields "+current);
+                 //   System.out.println("assignment ->match -> expr -> match 9 yields "+current);
+                    System.out.println("assignment ended successfully");
                 //add identifier and value of EXPR to hashmap
-                 return;
-
+                 break;
                 default:
                 error();
             }
-
         }
 
     //1 ID, 2 =, 3 Lit, 4 +, 5 -, 6 *, 7 (, 8 ), 9 ;
         void expr(){
+            System.out.println("enter expr...");
            switch (t_type) {  //may need to split this up to deal with inserting values into the hashmap
                case 7:
                case 5:
                case 4:
                case 3:
                case 1:
-                  term(); System.out.println("expr -> term returned " + current);
-
-
-                   expr_pr(); System.out.println("expr -> term -> expr_pr returned " + current);
-
-                   break; //may need to be a break statement instead
+                  term();
+                    //System.out.println("expr -> term returned " + current);
+                  expr_pr();
+                    //System.out.println("expr -> term -> expr_pr returned " + current);
+                   System.out.println("expr ended successfully");
+                   //break; //may need to be a break statement instead
                default:
-                    error();
+                   error();
             }
           }
 
         void expr_pr(){
+            System.out.println("enter expr_pr...");
                switch (t_type) {
-                    case 8:
-                    case 9:System.out.println("expr_pr -> case 9 returned " + current);
-                    case 10:
-                        //  case null :   //end of line? not sure how to handle that
-                      //  return;
                     case 4:
                         match(4);
-                        System.out.println("expr case 4 match yields next token: " + current);
-                        term(); System.out.println("expr 4 match->term yields next token: " + current);
-                        expr_pr(); System.out.println("expr 4 match->term-> expr_pr yields next token: " + current);
+                        //    System.out.println("expr_pr case 4 match yields next token: " + current);
+                        term();
+                          //  System.out.println("expr_pr 4 match->term yields next token: " + current);
+                        expr_pr();
+                            //System.out.println("expr_pr 4 match->term-> expr_pr yields next token: " + current);
 
-                        return;
+                             System.out.println("expr_pr 4 ended successfully");
+                        break;
                     case 5:
                         match(5);
-                        System.out.println("just matched type 5 in expr_pr call next up is: " + current);
-                        term(); System.out.println("expr 5 match->term yields next token: " + current);
-                        expr_pr(); System.out.println("expr 5 match->term-> expr_pr yields next token: " + current);
-                        return;
+                            //System.out.println("just matched type 5 in expr_pr call next up is: " + current);
+                        term();
+                           // System.out.println("expr_pr 5 match->term yields next token: " + current);
+                        expr_pr();
+                           // System.out.println("expr_pr 5 match->term-> expr_pr yields next token: " + current);
+                        System.out.println("expr_pr 5 ended successfully");
+                        break;
+                   case 8:
+                   case 9:
+                       //case 10:
+                       //  System.out.println("expr_pr -> case 8/9/10 returned " + current);
+                       System.out.println("expr_pr 8/9/10 ended successfully");
+                       break;
                     default:
                         error();
                 }
-
         }
 
         void term(){
+            System.out.println("enter term....");
          switch(t_type) {
             case 4: //+
             case 5: //-
             case 7: // (
             case 3: // lit
             case 1: //id
-                fact(); System.out.println("term -> fact returned " + current);//exits successfully
-                term_pr(); System.out.println("term -> fact -> term_pr returned " + current); //exits successfully
+                fact();
+                    //System.out.println("term -> fact returned " + current);//exits successfully
+                term_pr();
+                    //System.out.println("term -> fact -> term_pr returned " + current); //exits successfully
+                System.out.println("term ended successfully");
                 //control returns to expr
-               // return;
+               break;
             default:
                 error();
            }
         }
 
         void term_pr(){ //double check the first/follow/predict set for this one
+            System.out.println("enter term_pr...  ");
                 switch (t_type) {
                     case 6: //6
                         match(6);
-                        System.out.println("just matched type 6 in term_pr call next up is: " + current);
-                        fact(); System.out.println("term_pr -> fact returned " + current);
-                        term_pr(); System.out.println("term_pr -> fact -> term_pr returned " + current);
+                            // System.out.println("just matched type 6 in term_pr call next up is: " + current);
+                        fact();
+                            //System.out.println("term_pr -> fact returned " + current);
+                        term_pr();
+                            //System.out.println("term_pr -> fact -> term_pr returned " + current);
+                        System.out.println("term_pr ended successfully");
                     case 4: //+
                     case 5: //-
                     case 8: //)
                     case 9: //;
-                    case 10: //$
-                        return;
+                //    case 10: //$
+                        System.out.println("term_pr ended successfully");
+                     //   break;
                     default:
                         error();
                 }
         }
 
         void fact() {
-
+            System.out.println("enter fact...");
             switch (t_type) {
                 case 7: //(
-                    match(7);System.out.println("fact case 7 match yields next token: " + current);
-                    expr(); System.out.println("expr 7 match->expr yields next token: " + current);
-                    match(8); System.out.println("expr 7 match->expr -> match 8 yields next token: " + current);
-                    return;
+                    match(7);
+                        //System.out.println("fact case 7 match yields next token: " + current);
+                    expr();
+                        //System.out.println("expr 7 match->expr yields next token: " + current);
+                    match(8);
+                        //System.out.println("expr 7 match->expr -> match 8 yields next token: " + current);
+                    System.out.println("fact 7 ended successfully");
+                    break;
                 case 5: //-
-                    match(5);System.out.println("fact case 5 match yields next token: " + current);
-                    fact();System.out.println("fact case 5 match -> fact yields next token: " + current);
-                    return;
+                    match(5);
+                        //System.out.println("fact case 5 match yields next token: " + current);
+                    fact();
+                        //System.out.println("fact case 5 match -> fact yields next token: " + current);
+
+                    System.out.println("fact 5 ended successfully");
+                    break;
                 case 4: //+
-                    match(4); System.out.println("fact case 4 match yields next token: " + current);
-                    fact();System.out.println("fact case 4 match->fact yields next token: " + current);
-                    return;
+                    match(4);
+                        //System.out.println("fact case 4 match yields next token: " + current);
+                    fact();
+                        //System.out.println("fact case 4 match->fact yields next token: " + current);
+                    System.out.println("fact 4 ended successfully");
+                    break;
                 case 3: //lit
                     match(3);
-                    System.out.println("fact case 3 match yields next token: " + current);
-                    return;
+                        //System.out.println("fact case 3 match yields next token: " + current);
+                    System.out.println("fact 3 ended successfully");
+                    break;
                 case 1: //id
                     match(1); //see if it is already declared/in map then return int value}
-                    System.out.println("fact case 1 match yields next token: " + current);
-                    return;
+                        //System.out.println("fact case 1 match yields next token: " + current);
+                    System.out.println("fact 1 ended successfully");
+                    break;
                 default:
                     error();
-
             }
-
         }
-
 }
