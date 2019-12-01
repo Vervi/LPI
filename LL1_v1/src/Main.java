@@ -1,7 +1,7 @@
-import plc.ll1.Tokenizer.ParseException;
+import plc.ll1.Tokenizer.*;
 
 import java.util.LinkedList;
-import plc.ll1.Tokenizer.*;
+
 
 public class Main {
 
@@ -9,22 +9,27 @@ public class Main {
         Tokenizer tk = new Tokenizer();
         go(tk);
         LinkedList<Tokenizer.Token> tokens;
+
         System.out.println("let's test out some assignments...");
         try {
             Thread.sleep(650);
-            tk.tokenize("x =1;");
+            tk.tokenize("x = 1 ;");
             tokens=tk.getTokens();
-            for (Tokenizer.Token t: tokens)
+            tokens.add(new Tokenizer.Token(10, "$","eoi"));
+
+           /* for (Tokenizer.Token t: tokens)
                   {
                 System.out.println(t.name+ " " + t.token);
             }
-
+*/
+           //this is the line that actually calls the interpreter so this should not be commented out
             tk.interpret(); //it looks like this might run
-
+        /* loop works to read back input
                for (Tokenizer.Token tok : tokens) {
                 System.out.println("Current token is:" + tok.token + " of type " + tok.name);
                 Thread.sleep(650);
-            }
+                }
+         */
         }//2 secs
         catch (InterruptedException e) {
             e.printStackTrace();
