@@ -161,7 +161,13 @@ public class Tokenizer {
         }
 
         void program(){
-            assignment();
+            System.out.println("entering start rule: 'program'...");
+            switch(t_type) {
+                case 1:
+                    assignment();
+                default:
+                    error();
+            }
             System.out.println("program ended successfully");
          //   match(10);
         }

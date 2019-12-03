@@ -13,7 +13,7 @@ public class Main {
         System.out.println("let's test out some assignments...");
         try {
             Thread.sleep(650);
-            tk.tokenize("x = y ;");
+            tk.tokenize("x = 1 ;");
             tokens=tk.getTokens();
             tokens.add(new Tokenizer.Token(10, "$","eoi"));
 
