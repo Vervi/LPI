@@ -120,6 +120,9 @@ public class Tokenizer {
      private Iterator <Token> itr;
      private String current; //points to the token currently being looked at by the parser
      private String var; //the variable currently being worked on by the interpreter (on left side of assignment fn)
+     private String last_op;
+     private int v1;
+
 
      private String t_type;
 
@@ -173,23 +176,27 @@ public class Tokenizer {
     private void program(){
       //      System.out.println("entering start rule: 'program'...");
 
+        while (!(t_type.equals("eoi"))) { //as long as $ has not been reached keep looping
             switch(t_type) {
-                case "Identifier":
-                    assignment();
+                  case "Identifier":
+                        assignment();
 
                     /*if assignments succeed then after control is reverted to
                       program all of the assignments performed (entries in the map should be printed
                       key = val
                      */
 
-                    memory.entrySet().forEach(entry->{
-                        System.out.println(entry.getKey() + " = " + entry.getValue());
-                    });
-
-                    break;
-                default:
-                    p_error();
+                        break;
+                    default:
+                        p_error();
+                }
             }
+        /*
+            if any key in the map is set to null then we need to throw an error and not print anything
+         */
+            memory.entrySet().forEach(entry -> {
+            System.out.println(entry.getKey() + " = " + entry.getValue());
+        });
     //        System.out.println("program ended successfully");
 
         }
@@ -241,7 +248,7 @@ public class Tokenizer {
                switch (t_type) {
                     case "Plus":
                         match("Plus");
-
+                        last_op="Plus";
                         term();
 
                         expr_pr();
@@ -249,7 +256,7 @@ public class Tokenizer {
                         break;
                     case "Minus":
                         match("Minus");
-
+                        last_op="Plus";
                         term();
 
                         expr_pr();
@@ -267,40 +274,42 @@ public class Tokenizer {
      //       System.out.println("enter term....");
          switch(t_type) {
             case "Plus": //+
+                last_op="Plus";
+                fact();
+                term_pr();
+                break;
+
             case "Minus": //-
+                last_op="Minus";
+                fact();
+                term_pr();
+                break;
+
             case "L_Par": // (
             case "Literal": // lit
             case "Identifier": //id
                 fact();
-                    //System.out.println("term -> fact returned " + current);//exits successfully
                 term_pr();
-                   // System.out.println("term -> fact -> term_pr returned " + current); //exits successfully
-           //     System.out.println("term ended successfully");
-               break;
+                break;
+
             default:
                 p_error();
            }
         }
 
-      private void term_pr(){ //double check the first/follow/predict set for this one
-           // System.out.println("enter term_pr...  ");
+      private void term_pr(){
                 switch (t_type) {
                     case "Mul": //6
+                        last_op="Mul";
                         match("Mul");
-
                         fact();
-
                         term_pr();
-
-                 //       System.out.println("term_pr ended successfully");
                         break; //may need to remove this one
                     case "Plus": //+
                     case "Minus": //-
                     case "R_Par": //)
                     case "Semi": //;
-                //    case "Identifier"0: //$
-                 //       System.out.println("term_pr ended successfully");
-                        break;
+                         break;
                     default:
                         p_error();
                 }
@@ -311,33 +320,28 @@ public class Tokenizer {
             switch (t_type) {
                 case "L_Par": //(
                     match("L_Par");
-
                     expr();
-
                     match("R_Par");
-
                     break;
                 case "Minus": //-
+                    last_op="Minus";
                     match("Minus");
-
                     fact();
-
                     break;
                 case "Plus": //+
+                    last_op="Plus";
                     match("Plus");
-
                     fact();
-
                     break;
                 case "Literal": //lit
                     memory.replace(var,Integer.parseInt(input.token));
-
-
                     match("Literal");
-
              //       System.out.println("fact 3 ended successfully");
                     break;
                 case "Identifier": //id
+                    if (memory.containsKey(input.token)){
+
+                    }
                     match("Identifier"); //see if it is already declared/in map then return int value}
 
                     break;
