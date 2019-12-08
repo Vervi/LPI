@@ -124,11 +124,11 @@ public class Tokenizer {
      private Token input;
      private Iterator <Token> itr;
      private String current;
-     private Integer t_type;
+     private String t_type;
 
          //to make life easier, refer to tokens by their type(number) not name
-        void match(Integer expected){
-            if (input.type != expected ){
+        void match(String expected){
+            if ( !(input.name.equals(expected)) ){
                 error();
             }
             else
@@ -151,7 +151,7 @@ public class Tokenizer {
                 if(itr.hasNext()) {
                     input = itr.next();
                     current = input.token.intern();
-                    t_type = input.type;
+                    t_type = input.name;
                 }
             }
             catch(NoSuchElementException e)
@@ -163,8 +163,9 @@ public class Tokenizer {
         void program(){
             System.out.println("entering start rule: 'program'...");
             switch(t_type) {
-                case 1:
+                case "Identifier":
                     assignment();
+                    break;
                 default:
                     error();
             }
@@ -175,14 +176,14 @@ public class Tokenizer {
         void assignment(){
             System.out.println("enter assignment...");
            switch(t_type){
-                case 1:
-                match(1); //passes
-              //      System.out.println("assignment case 1 match yields: "+ current );
-                match(2); //passes
-                //    System.out.println("assignment case 2 match yields: "+ current );
+                case "Identifier":
+                match("Identifier"); //passes
+              //      System.out.println("assignment case "Identifier" match yields: "+ current );
+                match("Equals"); //passes
+                //    System.out.println("assignment case "Equals" match yields: "+ current );
                 expr();
                 //    System.out.println("assignment ->match -> expr yields "+current);
-                match(9);
+                match("Semi");
                  //   System.out.println("assignment ->match -> expr -> match 9 yields "+current);
                     System.out.println("assignment ended successfully");
                 //add identifier and value of EXPR to hashmap
@@ -196,17 +197,17 @@ public class Tokenizer {
         void expr(){
             System.out.println("enter expr...");
            switch (t_type) {  //may need to split this up to deal with inserting values into the hashmap
-               case 7:
-               case 5:
-               case 4:
-               case 3:
-               case 1:
+               case "L_Par":
+               case "Minus":
+               case "Plus":
+               case "Literal":
+               case "Identifier":
                   term();
                     //System.out.println("expr -> term returned " + current);
                   expr_pr();
                     //System.out.println("expr -> term -> expr_pr returned " + current);
                    System.out.println("expr ended successfully");
-                   //break; //may need to be a break statement instead
+                   break;
                default:
                    error();
             }
@@ -215,9 +216,9 @@ public class Tokenizer {
         void expr_pr(){
             System.out.println("enter expr_pr...");
                switch (t_type) {
-                    case 4:
-                        match(4);
-                        //    System.out.println("expr_pr case 4 match yields next token: " + current);
+                    case "Plus":
+                        match("Plus");
+                        //    System.out.println("expr_pr case "Plus" match yields next token: " + current);
                         term();
                           //  System.out.println("expr_pr 4 match->term yields next token: " + current);
                         expr_pr();
@@ -225,8 +226,8 @@ public class Tokenizer {
 
                              System.out.println("expr_pr 4 ended successfully");
                         break;
-                    case 5:
-                        match(5);
+                    case "Minus":
+                        match("Minus");
                             //System.out.println("just matched type 5 in expr_pr call next up is: " + current);
                         term();
                            // System.out.println("expr_pr 5 match->term yields next token: " + current);
@@ -234,9 +235,9 @@ public class Tokenizer {
                            // System.out.println("expr_pr 5 match->term-> expr_pr yields next token: " + current);
                         System.out.println("expr_pr 5 ended successfully");
                         break;
-                   case 8:
-                   case 9:
-                       //case 10:
+                   case "R_Par":
+                   case "Semi":
+                   case "WS":
                        //  System.out.println("expr_pr -> case 8/9/10 returned " + current);
                        System.out.println("expr_pr 8/9/10 ended successfully");
                        break;
@@ -248,17 +249,17 @@ public class Tokenizer {
         void term(){
             System.out.println("enter term....");
          switch(t_type) {
-            case 4: //+
-            case 5: //-
-            case 7: // (
-            case 3: // lit
-            case 1: //id
+            case "Plus": //+
+            case "Minus": //-
+            case "L_Par": // (
+            case "Literal": // lit
+            case "Identifier": //id
                 fact();
                     //System.out.println("term -> fact returned " + current);//exits successfully
                 term_pr();
-                    //System.out.println("term -> fact -> term_pr returned " + current); //exits successfully
+                   // System.out.println("term -> fact -> term_pr returned " + current); //exits successfully
                 System.out.println("term ended successfully");
-                //control returns to expr
+
                break;
             default:
                 error();
@@ -268,21 +269,22 @@ public class Tokenizer {
         void term_pr(){ //double check the first/follow/predict set for this one
             System.out.println("enter term_pr...  ");
                 switch (t_type) {
-                    case 6: //6
-                        match(6);
+                    case "Mul": //6
+                        match("Mul");
                             // System.out.println("just matched type 6 in term_pr call next up is: " + current);
                         fact();
                             //System.out.println("term_pr -> fact returned " + current);
                         term_pr();
                             //System.out.println("term_pr -> fact -> term_pr returned " + current);
                         System.out.println("term_pr ended successfully");
-                    case 4: //+
-                    case 5: //-
-                    case 8: //)
-                    case 9: //;
-                //    case 10: //$
+                        break; //may need to remove this one
+                    case "Plus": //+
+                    case "Minus": //-
+                    case "R_Par": //)
+                    case "Semi": //;
+                //    case "Identifier"0: //$
                         System.out.println("term_pr ended successfully");
-                     //   break;
+                        break;
                     default:
                         error();
                 }
@@ -291,38 +293,38 @@ public class Tokenizer {
         void fact() {
             System.out.println("enter fact...");
             switch (t_type) {
-                case 7: //(
-                    match(7);
+                case "L_Par": //(
+                    match("L_Par");
                         //System.out.println("fact case 7 match yields next token: " + current);
                     expr();
                         //System.out.println("expr 7 match->expr yields next token: " + current);
-                    match(8);
+                    match("R_Par");
                         //System.out.println("expr 7 match->expr -> match 8 yields next token: " + current);
                     System.out.println("fact 7 ended successfully");
                     break;
-                case 5: //-
-                    match(5);
+                case "Minus": //-
+                    match("Minus");
                         //System.out.println("fact case 5 match yields next token: " + current);
                     fact();
                         //System.out.println("fact case 5 match -> fact yields next token: " + current);
 
                     System.out.println("fact 5 ended successfully");
                     break;
-                case 4: //+
-                    match(4);
-                        //System.out.println("fact case 4 match yields next token: " + current);
+                case "Plus": //+
+                    match("Plus");
+                        //System.out.println("fact case "Plus" match yields next token: " + current);
                     fact();
-                        //System.out.println("fact case 4 match->fact yields next token: " + current);
+                        //System.out.println("fact case "Plus" match->fact yields next token: " + current);
                     System.out.println("fact 4 ended successfully");
                     break;
-                case 3: //lit
-                    match(3);
-                        //System.out.println("fact case 3 match yields next token: " + current);
+                case "Literal": //lit
+                    match("Literal");
+                        //System.out.println("fact case "Literal" match yields next token: " + current);
                     System.out.println("fact 3 ended successfully");
                     break;
-                case 1: //id
-                    match(1); //see if it is already declared/in map then return int value}
-                        //System.out.println("fact case 1 match yields next token: " + current);
+                case "Identifier": //id
+                    match("Identifier"); //see if it is already declared/in map then return int value}
+                        //System.out.println("fact case "Identifier" match yields next token: " + current);
                     System.out.println("fact 1 ended successfully");
                     break;
                 default:

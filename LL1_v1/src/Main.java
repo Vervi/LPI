@@ -53,8 +53,8 @@ public class Main {
         t.add("\\*" ,6, "Mul"); //mul
         t.add("\\(",  7,"L_Par"); //L_Par
         t.add("\\)", 8,"R_Par"); //R_Par
-        t.add("\\;",  9,"Semicolon"); //semicolon
-        t.add("\\s", 0,"Whitespace"); //match skips this using trim, need it here to avoid errors
+        t.add("\\;",  9,"Semi"); //semicolon
+        t.add("\\s", 0,"WS"); //match skips this using trim, need it here to avoid errors
 
     }
 
