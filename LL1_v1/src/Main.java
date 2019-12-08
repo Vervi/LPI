@@ -14,6 +14,7 @@ public class Main {
         try {
             Thread.sleep(650);
             tk.tokenize("x = 1 ; y = 2; z= x+y;");
+            //tk.tokenize("u=3*2; v=2*u ; w=3*v+1;");
             tokens=tk.getTokens();
             tokens.add(new Tokenizer.Token(10, "$","eoi"));
 

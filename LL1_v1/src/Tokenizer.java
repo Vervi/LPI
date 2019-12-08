@@ -122,6 +122,7 @@ public class Tokenizer {
      private String var; //the variable currently being worked on by the interpreter (on left side of assignment fn)
      private String last_op;
      private int v1;
+     private int v2;
 
 
      private String t_type;
@@ -236,6 +237,7 @@ public class Tokenizer {
                case "Identifier":
                   term();
                   expr_pr();
+                  memory.put(var,v1);
       //            System.out.println("expr ended successfully");
                    break;
                default:
@@ -302,8 +304,17 @@ public class Tokenizer {
                     case "Mul": //6
                         last_op="Mul";
                         match("Mul");
-                        fact();
-                        term_pr();
+                        //if we know the next token will give us a second term for mul, find it
+                        //and perform the operation
+                        if(input.name.equals("Literal") || input.name.equals("Identifier")){
+                            v2=v1;
+                            fact();
+                            term_pr();
+                            v1*=v2;
+                            //System.out.println("res =" + v1);
+                        }
+
+                        //System.out.println("v1 is "+ v1 + " v2 is " +v2 );
                         break; //may need to remove this one
                     case "Plus": //+
                     case "Minus": //-
@@ -335,11 +346,13 @@ public class Tokenizer {
                     break;
                 case "Literal": //lit
                     memory.replace(var,Integer.parseInt(input.token));
+                    v1=Integer.parseInt(input.token);
                     match("Literal");
              //       System.out.println("fact 3 ended successfully");
                     break;
                 case "Identifier": //id
                     if (memory.containsKey(input.token)){
+                        v1=memory.get(input.token);
 
                     }
                     match("Identifier"); //see if it is already declared/in map then return int value}
