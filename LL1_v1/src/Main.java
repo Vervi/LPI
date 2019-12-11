@@ -13,39 +13,26 @@ public class Main {
         System.out.println("let's test out some assignments...");
         try {
             Thread.sleep(650);
-            tk.tokenize("x = 1 ; y = 2; z= x+y;");
+            //tk.tokenize("x = 1 ; y = 2; z= x+y;");
             //tk.tokenize("u=3*2; v=2*u ; w=3*v+1;");
+            tk.tokenize("r =3; s= 2*(r-1);t =3*r+(s-2*r);");
+           // tk.tokenize("s=2 * (3*6);");
             tokens=tk.getTokens();
             tokens.add(new Tokenizer.Token(10, "$","eoi"));
+            tk.interpret();
 
-           /* for (Tokenizer.Token t: tokens)
-                  {
-                System.out.println(t.name+ " " + t.token);
-            }
-*/
-           //this is the line that actually calls the interpreter so this should not be commented out
-            tk.interpret(); //it looks like this might run
-        /* loop works to read back input
-               for (Tokenizer.Token tok : tokens) {
-                System.out.println("Current token is:" + tok.token + " of type " + tok.name);
-                Thread.sleep(650);
-                }
-         */
-        }//2 secs
+        }
         catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ParseException e) {
             System.out.println(e.getMessage());
         }
-
     }
-
     /**
      * A helper method to populate tokenizer with rules, without altering its blueprint
      * @param t
      */
     public static void go(Tokenizer t){
-
         t.add("[a-zA-Z_][a-zA-Z_0-9]*", 1, "Identifier") ; // Identifier
         t.add("\\=" , 2, "Equals");     //assignment operator
         t.add( "^0[^0-9]|^[1-9]\\d*",3,"Literal"); //from start of string 0 not followed by any digit or any digit w/non leading zero
@@ -56,10 +43,6 @@ public class Main {
         t.add("\\)", 8,"R_Par"); //R_Par
         t.add("\\;",  9,"Semi"); //semicolon
         t.add("\\s", 0,"WS"); //match skips this using trim, need it here to avoid errors
-
     }
-
-
-
 }
 

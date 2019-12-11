@@ -61,8 +61,8 @@ public class Tokenizer {
      * Constructor for Tokenizer objects
      */
     public Tokenizer() {
-        tokenData = new LinkedList<TokenDatum>();
-        tokens = new LinkedList<Token>();
+        tokenData = new LinkedList<>();
+        tokens = new LinkedList<>();
     }
 
     /**
@@ -123,6 +123,7 @@ public class Tokenizer {
      private String last_op;
      private int v1;
      private int v2;
+     private String temp="temp";
 
 
      private String t_type;
@@ -153,6 +154,7 @@ public class Tokenizer {
             next();
           //  System.out.println("itr initially points to to: "+ current );
             memory = new HashMap<String,Integer>();
+            memory.put(temp,0);
             program();
                // System.out.println("program ended successfully");
         }
@@ -175,7 +177,7 @@ public class Tokenizer {
      * Start rule of the defined grammar.
      */
     private void program(){
-      //      System.out.println("entering start rule: 'program'...");
+            System.out.println("entering start rule: 'program'...");
 
         while (!(t_type.equals("eoi"))) { //as long as $ has not been reached keep looping
             switch(t_type) {
@@ -195,40 +197,40 @@ public class Tokenizer {
         /*
             if any key in the map is set to null then we need to throw an error and not print anything
          */
+        //remove "temp"kv pair from map then print entries
+
             memory.entrySet().forEach(entry -> {
             System.out.println(entry.getKey() + " = " + entry.getValue());
         });
-    //        System.out.println("program ended successfully");
+
+       //    System.out.println("v1 = " +v1);
 
         }
     //1 ID, 2 =, 3 Lit, 4 +, 5 -, 6 *, 7 (, 8 ), 9 ;
        private void assignment(){
-     //       System.out.println("enter assignment...");
+        System.out.println("enter assignment...");
            switch(t_type){
                 case "Identifier":
 
                 memory.put(current,null); //add variable name to memory
                 var = input.token;
-         //       System.out.println("curent variable under assignment's scope is " + var);
+         //       System.out.println("current variable under assignment's scope is " + var);
 
-                match("Identifier"); //
-                match("Equals"); //
-
+                match("Identifier");
+                match("Equals");
+                last_op ="eq";
                 expr();
-
                 match("Semi");
-
-     //               System.out.println("assignment ended successfully");
-                //add identifier and value of EXPR to hashmap
-                 break;
+                break;
                 default:
                 p_error();
             }
+           System.out.println("assignment ended");
         }
 
     //1 ID, 2 =, 3 Lit, 4 +, 5 -, 6 *, 7 (, 8 ), 9 ;
        private void expr(){
-     //       System.out.println("enter expr...");
+           System.out.println("enter expr...");
            switch (t_type) {  //may need to split this up to deal with inserting values into the hashmap
                case "L_Par":
                case "Minus":
@@ -237,16 +239,18 @@ public class Tokenizer {
                case "Identifier":
                   term();
                   expr_pr();
+
                   memory.put(var,v1);
-      //            System.out.println("expr ended successfully");
-                   break;
+ //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                  break;
                default:
                    p_error();
             }
+           System.out.println("expr ended");
           }
 
        private void expr_pr(){
-      //      System.out.println("enter expr_pr...");
+            System.out.println("enter expr_pr...");
                switch (t_type) {
                     case "Plus":
                         match("Plus");
@@ -255,12 +259,18 @@ public class Tokenizer {
 
                         expr_pr();
 
+                        if(input.name.equals("Literal") || input.name.equals("Identifier")){
+                            v2=v1;
+                            fact();
+                            term_pr();
+                            v1+=v2;
+                        }
+
                         break;
                     case "Minus":
                         match("Minus");
                         last_op="Plus";
                         term();
-
                         expr_pr();
                         break;
                    case "R_Par":
@@ -268,21 +278,19 @@ public class Tokenizer {
                    case "WS":
                         break;
                     default:
-                        p_error();
+                //        p_error();
                 }
+           System.out.println("expr_pr ended");
         }
 
        private void term(){
-     //       System.out.println("enter term....");
+            System.out.println("enter term....");
          switch(t_type) {
-            case "Plus": //+
-                last_op="Plus";
+            case "Plus":
                 fact();
                 term_pr();
                 break;
-
-            case "Minus": //-
-                last_op="Minus";
+            case "Minus":
                 fact();
                 term_pr();
                 break;
@@ -296,13 +304,17 @@ public class Tokenizer {
 
             default:
                 p_error();
+
            }
+           System.out.println("term ended");
         }
 
       private void term_pr(){
+        System.out.println("enter term_pr...");
                 switch (t_type) {
                     case "Mul": //6
-                        last_op="Mul";
+
+                       System.out.println("just matched mul and moved to next token");
                         match("Mul");
                         //if we know the next token will give us a second term for mul, find it
                         //and perform the operation
@@ -311,10 +323,12 @@ public class Tokenizer {
                             fact();
                             term_pr();
                             v1*=v2;
-                            //System.out.println("res =" + v1);
+                        }
+                        else{
+                            fact();
+                            term_pr();
                         }
 
-                        //System.out.println("v1 is "+ v1 + " v2 is " +v2 );
                         break; //may need to remove this one
                     case "Plus": //+
                     case "Minus": //-
@@ -324,10 +338,11 @@ public class Tokenizer {
                     default:
                         p_error();
                 }
+          System.out.println("term_pr ended");
         }
 
        private void fact() {
-        //    System.out.println("enter fact...");
+        System.out.println("enter fact...");
             switch (t_type) {
                 case "L_Par": //(
                     match("L_Par");
@@ -342,20 +357,22 @@ public class Tokenizer {
                 case "Plus": //+
                     last_op="Plus";
                     match("Plus");
+                    v1=Integer.parseInt(input.token);
                     fact();
                     break;
                 case "Literal": //lit
                     memory.replace(var,Integer.parseInt(input.token));
                     v1=Integer.parseInt(input.token);
                     match("Literal");
-             //       System.out.println("fact 3 ended successfully");
+                System.out.println("fact: literal matched successfully");
                     break;
                 case "Identifier": //id
                     if (memory.containsKey(input.token)){
                         v1=memory.get(input.token);
 
                     }
-                    match("Identifier"); //see if it is already declared/in map then return int value}
+                    match("Identifier");
+                    //see if it is already declared/in map then return int value
 
                     break;
                 default:
