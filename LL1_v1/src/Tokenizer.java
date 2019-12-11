@@ -330,21 +330,21 @@ public class Tokenizer {
         System.out.println("enter term_pr...");
                 switch (t_type) {
                     case "Mul": //6
-
+                        last_op="Mul";
                        System.out.println("just matched mul and moved to next token");
                         match("Mul");
                         //if we know the next token will give us a second term for mul, find it
                         //and perform the operation
-                        if(input.name.equals("Literal") || input.name.equals("Identifier")){
+                     /*  if(input.name.equals("Literal") || input.name.equals("Identifier")){
                             v2=v1;
                             fact();
                             term_pr();
                             v1*=v2;
                         }
-                        else{
+                        else{*/
                             fact();
                             term_pr();
-                        }
+                        //}
 
                         break; //may need to remove this one
                     case "Plus": //+
@@ -394,6 +394,10 @@ public class Tokenizer {
                          t-=v1;
                          memory.replace(temp,t);
                      }
+                     else if(last_op.equals("Mul")){
+                         t*=v1;
+                         memory.replace(temp,t);
+                     }
 
                  match("Literal");
                 System.out.println("fact: literal matched successfully");
@@ -413,6 +417,12 @@ public class Tokenizer {
                             t-=v1;
                             memory.replace(temp,t);
                         }
+                        else if(last_op.equals("Mul")){
+                            t*=v1;
+                            memory.replace(temp,t);
+                        }
+                        else
+                            i_error();
                     }
                     match("Identifier");
                     //see if it is already declared/in map then return int value

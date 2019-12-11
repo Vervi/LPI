@@ -14,7 +14,7 @@ public class Main {
         try {
             Thread.sleep(650);
             //tk.tokenize("x = 1 ; y = 2; z= x+y;"); //works
-            tk.tokenize("u=3*2; v=2*u ; w=3*v+1;");
+            tk.tokenize("u=3*2; v=2*u ; w=3*(k+1);");
            // tk.tokenize("r =3; s= 2*(r-1);t =3*r+(s-2*r);");
          //   tk.tokenize("s=1+2;");
             tokens=tk.getTokens();
