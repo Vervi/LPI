@@ -123,6 +123,7 @@ public class Tokenizer {
      private String last_op;
      private int v1;
      private int v2;
+     private int t=0; //the value associated with temp in memory map
      private String temp="temp";
 
 
@@ -238,9 +239,14 @@ public class Tokenizer {
                case "Literal":
                case "Identifier":
                   term();
-                  expr_pr();
 
-                  memory.put(var,v1);
+
+
+
+                  expr_pr();
+                   System.out.println("in exprafter term if EP returns a '+' next token is: " + current);
+
+                   memory.put(var,memory.get(temp));
  //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
                   break;
                default:
@@ -258,14 +264,6 @@ public class Tokenizer {
                         term();
 
                         expr_pr();
-
-                        if(input.name.equals("Literal") || input.name.equals("Identifier")){
-                            v2=v1;
-                            fact();
-                            term_pr();
-                            v1+=v2;
-                        }
-
                         break;
                     case "Minus":
                         match("Minus");
@@ -287,11 +285,14 @@ public class Tokenizer {
             System.out.println("enter term....");
          switch(t_type) {
             case "Plus":
+
                 fact();
+              //  memory.replace(temp,v1);
                 term_pr();
                 break;
             case "Minus":
                 fact();
+             //   memory.replace(temp,v1);
                 term_pr();
                 break;
 
@@ -299,6 +300,7 @@ public class Tokenizer {
             case "Literal": // lit
             case "Identifier": //id
                 fact();
+             //   memory.replace(temp,v1);
                 term_pr();
                 break;
 
@@ -306,9 +308,24 @@ public class Tokenizer {
                 p_error();
 
            }
-           System.out.println("term ended");
+           System.out.println("term ended" +'\n'+ "t = " + t);
         }
 
+
+
+        /*
+
+        if(input.name.equals("Literal") || input.name.equals("Identifier")){
+                       v2=v1;
+                       fact();
+                       term_pr();
+                       v1+=v2;
+                   }
+
+
+
+
+         */
       private void term_pr(){
         System.out.println("enter term_pr...");
                 switch (t_type) {
@@ -361,15 +378,41 @@ public class Tokenizer {
                     fact();
                     break;
                 case "Literal": //lit
-                    memory.replace(var,Integer.parseInt(input.token));
+                    //memory.replace(var,Integer.parseInt(input.token));
+                    System.out.println("current last op is..."+ last_op);
                     v1=Integer.parseInt(input.token);
-                    match("Literal");
+                  //  memory.replace(temp,v1);
+                     if (last_op.equals("eq")){
+                         t=v1;
+                         memory.replace(temp,t);
+                    }
+                     else if(last_op.equals("Plus")){
+                         t+=v1;
+                         memory.replace(temp,t);
+                     }
+                     else if(last_op.equals("Minus")){
+                         t-=v1;
+                         memory.replace(temp,t);
+                     }
+
+                 match("Literal");
                 System.out.println("fact: literal matched successfully");
                     break;
                 case "Identifier": //id
                     if (memory.containsKey(input.token)){
                         v1=memory.get(input.token);
-
+                        if (last_op.equals("eq")){
+                            t=v1;
+                            memory.replace(temp,t);
+                        }
+                        else if(last_op.equals("Plus")){
+                            t+=v1;
+                            memory.replace(temp,t);
+                        }
+                        else if(last_op.equals("Minus")){
+                            t-=v1;
+                            memory.replace(temp,t);
+                        }
                     }
                     match("Identifier");
                     //see if it is already declared/in map then return int value
