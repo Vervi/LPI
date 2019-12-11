@@ -1,4 +1,4 @@
-package plc.ll1.Tokenizer;
+package f19.plc.ll1;
 
 public class ParseException extends RuntimeException {
     public ParseException(String msg) {

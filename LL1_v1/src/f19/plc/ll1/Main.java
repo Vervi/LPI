@@ -1,4 +1,4 @@
-import plc.ll1.Tokenizer.*;
+package f19.plc.ll1;
 
 import java.util.LinkedList;
 
@@ -14,7 +14,7 @@ public class Main {
         try {
             Thread.sleep(650);
             //tk.tokenize("x = 1 ; y = 2; z= x+y;"); //works
-            tk.tokenize("u=3*2; v=2*u ; w=3*(k+1);");
+            tk.tokenize("u=3*2; v=2*u ; w=3*(v+1);");
            // tk.tokenize("r =3; s= 2*(r-1);t =3*r+(s-2*r);");
          //   tk.tokenize("s=1+2;");
             tokens=tk.getTokens();
@@ -30,19 +30,19 @@ public class Main {
     }
     /**
      * A helper method to populate tokenizer with rules, without altering its blueprint
-     * @param t
+     * @param tz a tokenizer object
      */
-    public static void go(Tokenizer t){
-        t.add("[a-zA-Z_][a-zA-Z_0-9]*", 1, "Identifier") ; // Identifier
-        t.add("\\=" , 2, "Equals");     //assignment operator
-        t.add( "^0[^0-9]|^[1-9]\\d*",3,"Literal"); //from start of string 0 not followed by any digit or any digit w/non leading zero
-        t.add("\\+" , 4,"Plus"); //plus
-        t.add("\\-" , 5, "Minus"); //minus
-        t.add("\\*" ,6, "Mul"); //mul
-        t.add("\\(",  7,"L_Par"); //L_Par
-        t.add("\\)", 8,"R_Par"); //R_Par
-        t.add("\\;",  9,"Semi"); //semicolon
-        t.add("\\s", 0,"WS"); //match skips this using trim, need it here to avoid errors
+    public static void go(Tokenizer tz){
+        tz.add("[a-zA-Z_][a-zA-Z_0-9]*", 1, "Identifier") ; // Identifier
+        tz.add("\\=" , 2, "Equals");     //assignment operator
+        tz.add( "^0[^0-9]|^[1-9]\\d*",3,"Literal"); //from start of string 0 not followed by any digit or any digit w/non leading zero
+        tz.add("\\+" , 4,"Plus"); //plus
+        tz.add("\\-" , 5, "Minus"); //minus
+        tz.add("\\*" ,6, "Mul"); //mul
+        tz.add("\\(",  7,"L_Par"); //L_Par
+        tz.add("\\)", 8,"R_Par"); //R_Par
+        tz.add("\\;",  9,"Semi"); //semicolon
+        tz.add("\\s", 0,"WS"); //match skips this using trim, need it here to avoid errors
     }
 }
 
