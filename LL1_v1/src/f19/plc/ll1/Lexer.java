@@ -144,6 +144,9 @@ public class Lexer {
     private int p = 0; //the value associated with what's inside current parenthitecal operation in memory map
     private String par = "par";
 
+    LinkedList<String> ops;
+    Iterator<String> ditr;
+
     //for readability referring to tokens by type name
     private void match(String expected) {
         if (!(input.name.equals(expected))) {
@@ -172,6 +175,8 @@ public class Lexer {
      */
     void interpret() {
         itr = tokens.iterator();
+        ops =new LinkedList<String>();
+        ditr = ops.descendingIterator();
         next();
         memory = new HashMap<String, Integer>();
         memory.put(temp, t);
@@ -211,8 +216,8 @@ public class Lexer {
         if(memory.containsValue(null))
             interpretorError();
         else {
-            memory.remove(temp);
-            memory.remove(par);
+          //  memory.remove(temp);
+          //  memory.remove(par);
             memory.entrySet().forEach(entry -> {
                 System.out.println(entry.getKey() + " = " + entry.getValue());
             });
@@ -226,10 +231,13 @@ public class Lexer {
                 memory.put(current, null); //add variable name to memory
                 var = current;
                 match("Identifier");
+                ops.add("id");
                 match("Equals");
                 current_op = "eq";
+                ops.add("=");
                 expr();
                 match("Semi");
+                ops.add(";");
                 break;
             default:
                 parseError();
@@ -312,6 +320,7 @@ public class Lexer {
         switch (t_type) {
             case "Mul": //6
                 current_op = "Mul";
+                ops.add("Mul");
                 match("Mul");
                 fact();
                 last_op = current_op;
@@ -336,62 +345,47 @@ public class Lexer {
             case "L_Par": //(
                 last_op = current_op;
                 current_op = "L_Par";
+                ops.add("(");
                 parCheck = true;
                 match("L_Par");
                 expr();
                 parCheck = false;
+                ops.add(")");
                 match("R_Par"); //)
                  //if prev match succeeded, no longer inside (exp)
                 last_op = "R_Par";
                 break;
             case "Minus": //-
                 current_op = "Minus";
+                ops.add("-");
                 match("Minus");
                 last_op = current_op;
                 fact();
                 break;
             case "Plus": //+
                 current_op = "Plus";
+                ops.add("+");
                 match("Plus");
                 last_op = current_op;
                 fact();
                 break;
             case "Literal": //lit
                 v1 = Integer.parseInt(current);
-
-                if (parCheck) //if inside a parenthetical exp
-                {
-                    updatePar();
-                                 }
-                else if (last_op.equals("R_Par")){
-                    t = p;
-                    memory.replace(temp, t);
-                    updateTemp();
-                }
-                else
-                    updateTemp();
+                update();
+                ops.add("lit");
                 match("Literal");
                 break;
             case "Identifier":
             //  System.out.println("fact id input token is : "+ current +'\n' + " value: "+ memory.get(current));
                 if (memory.containsKey(current) && (memory.get(current) != null)) {
                     v1 = memory.get(current);
-                    if (parCheck) //if inside a parenthetical exp
-                    {
-                        updatePar();
-                    }
-                    else if (last_op.equals("R_Par")){
-                        t = p;
-                        memory.replace(temp, t);
-                        updateTemp();
-                     }
-                    else
-                        updateTemp();
+                  update();
                 }
                 else
                 {
                     interpretorError();
                 }
+                ops.add("id");
                 match("Identifier");
                 break;
             default:
@@ -400,6 +394,69 @@ public class Lexer {
         //System.out.println("fact ended");
     }
 
+
+    private void signCheck(){
+
+        if (current_op.equals("Minus")){
+            String ch=""; //the id or lit that is in scope of interpreter when this is called
+            int flip=0;
+            String first=""; //the last token we check after looking at consec minus signs
+
+
+            while(ditr.hasNext() ) { //&& ch=="-"){
+                ch = ditr.next();
+                System.out.println("ch = ");
+
+                if (ch.equals("-")) {
+                    flip += 1;
+                    //first = ch;
+                } else {
+                    first = ch;//last_op=ch;
+                    System.out.println("first= " + first);
+                    if (ch.equals("*")) {
+                        current_op = "Mul";
+                        System.out.println("first mul reached");
+                    } else if (ch.equals("+"))
+                        current_op = "Plus";
+                    else if (ch.equals("-"))
+                        current_op = "Minus";
+                    else if (ch.equals(")"))
+                        last_op = "R_Par";
+                    break;
+                }
+            }
+            if(flip==1){
+                if ((first.equals("lit")||first.equals("id")))
+                    System.out.println("first when flips is 1: "+first );
+                    current_op=ch;
+
+
+            }
+            else if (flip == 2) {
+                current_op="Plus";
+             }
+             else if (flip >2 && flip % 2 != 0)
+             {
+               v1 *= -1;
+               System.out.println("flip 2+ reached");
+             }
+        }
+        }
+
+    private void update(){
+        signCheck();
+        if (parCheck) //if inside a parenthetical exp
+        {
+            updatePar();
+        }
+        else if (last_op.equals("R_Par")){
+            t = p;
+            memory.replace(temp, t);
+            updateTemp();
+        }
+        else
+            updateTemp();
+    }
 
     private void updateTemp() {
         if (current_op.equals("eq")) {
