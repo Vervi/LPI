@@ -69,12 +69,13 @@ public class Lexer {
 
         add("[a-zA-Z_][a-zA-Z_0-9]*", 1, "Identifier"); // Identifier
         add("\\=", 2, "Equals");     //assignment operator
-        add("^0[^0-9]|^[1-9]\\d*", 3, "Literal"); //from start of string 0 not followed by any digit or any digit w/non leading zero
         add("\\(", 7, "L_Par"); //L_Par
         add("\\)", 8, "R_Par"); //R_Par
         add("\\*", 6, "Mul"); //mul
         add("\\+", 4, "Plus"); //plus
         add("\\-", 5, "Minus"); //minus
+        add("^0[^0-9;]|^[1-9]\\d*", 3, "Literal"); //from start of string 0 not followed by any digit or any digit w/non leading zero
+
         add("\\;", 9, "Semi"); //semicolon
         add("\\s", 0, "WS");
     }
@@ -422,6 +423,7 @@ public class Lexer {
     }
 
     private void update(){
+        signCheck();
         signCheck();
         if (ops.get(ops.size()-1).equals("(")) //if inside a parenthetical exp
         {
