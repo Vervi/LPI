@@ -129,8 +129,9 @@ public class Lexer {
 
 
     private HashMap<String, Integer> memory;
-    private Lexer.Token input;
+    private Lexer.Token input=new Token(11,"null","null");
     private Iterator<Lexer.Token> itr;
+    private Lexer.Token last;
     private String current; //points to the token currently being looked at by the parser
     private String var; //the variable currently being worked on by the interpreter (ID on left side of assignment fn)
     private String current_op;
@@ -144,15 +145,19 @@ public class Lexer {
     private int p = 0; //the value associated with what's inside current parenthitecal operation in memory map
     private String par = "par";
 
-    LinkedList<String> ops;
-    Iterator<String> ditr;
+    Stack<String> ops;
+    Stack<Integer> operands;
+    Stack<String> consumed;
+
 
     //for readability referring to tokens by type name
     private void match(String expected) {
         if (!(input.name.equals(expected))) {
             parseError();
-        } else
+        } else {
+
             next();
+        }
     }
 
     /**
@@ -175,13 +180,15 @@ public class Lexer {
      */
     void interpret() {
         itr = tokens.iterator();
-        ops =new LinkedList<String>();
-        ditr = ops.descendingIterator();
+        ops =new Stack<>();
+        operands=new Stack<>();
+        consumed=new Stack<>();
         next();
-        memory = new HashMap<String, Integer>();
+        memory = new HashMap<>();
         memory.put(temp, t);
         memory.put(par, p);
         program();
+        if (itr.hasNext()) input=itr.next();
     }
 
     void next() {
@@ -189,7 +196,9 @@ public class Lexer {
             if (itr.hasNext()) {
                 input = itr.next();
                 current = input.token.intern();
-                t_type = input.name;
+                t_type = input.name; //token type of current token
+                consumed.push(t_type);
+
             }
         } catch (NoSuchElementException e) {
             input = null;
@@ -322,8 +331,8 @@ public class Lexer {
                 current_op = "Mul";
                 ops.add("Mul");
                 match("Mul");
-                fact();
                 last_op = current_op;
+                fact();
                 term_pr();
                 break; //may need to remove this one
             case "Plus": //+
@@ -343,49 +352,48 @@ public class Lexer {
         // System.out.println("enter fact...");
         switch (t_type) {
             case "L_Par": //(
-                last_op = current_op;
+            //    last_op = current_op;
                 current_op = "L_Par";
-                ops.add("(");
-                parCheck = true;
                 match("L_Par");
+                ops.add("(");
                 expr();
-                parCheck = false;
-                ops.add(")");
                 match("R_Par"); //)
+                ops.add(")");
                  //if prev match succeeded, no longer inside (exp)
-                last_op = "R_Par";
+
                 break;
             case "Minus": //-
                 current_op = "Minus";
                 ops.add("-");
                 match("Minus");
-                last_op = current_op;
+             //   last_op = current_op;
                 fact();
                 break;
             case "Plus": //+
                 current_op = "Plus";
                 ops.add("+");
                 match("Plus");
-                last_op = current_op;
+              //  last_op = current_op;
                 fact();
                 break;
             case "Literal": //lit
                 v1 = Integer.parseInt(current);
+                operands.add(v1);
                 update();
-                ops.add("lit");
                 match("Literal");
                 break;
             case "Identifier":
             //  System.out.println("fact id input token is : "+ current +'\n' + " value: "+ memory.get(current));
                 if (memory.containsKey(current) && (memory.get(current) != null)) {
                     v1 = memory.get(current);
+                    operands.add(v1);
                   update();
                 }
                 else
                 {
                     interpretorError();
                 }
-                ops.add("id");
+
                 match("Identifier");
                 break;
             default:
@@ -394,65 +402,34 @@ public class Lexer {
         //System.out.println("fact ended");
     }
 
-
     private void signCheck(){
 
-        if (current_op.equals("Minus")){
-            String ch=""; //the id or lit that is in scope of interpreter when this is called
-            int flip=0;
-            String first=""; //the last token we check after looking at consec minus signs
-
-            //this loop never actually gets entered, need to know why
-            while(ditr.hasNext() ) { //&& ch=="-"){
-                ch = ditr.next();
-                System.out.println("ch = ");
-
-                if (ch.equals("-")) {
-                    flip += 1;
-                    //first = ch;
-
-                }
-                else {
-                    first = ch;//last_op=ch;
-                    System.out.println("first= " + first);
-                    if (ch.equals("*")) {
-                        current_op = "Mul";
-                        System.out.println("first mul reached");
-                    } else if (ch.equals("+"))
-                        current_op = "Plus";
-                    else if (ch.equals("-"))
-                        current_op = "Minus";
-                    else if (ch.equals(")"))
-                        last_op = "R_Par";
-                    break;
-                }
-                System.out.println("val of first: "+first  );
+        String last =consumed.get(consumed.size()-2);
+       // System.out.println(last);
+        if (!(last.equals("Literal")||last.equals("Identifier"))){
+        if (current_op.equals("Minus") ) {
+           // System.out.println("current op: " + ops.get(ops.size() - 1));
+         //   System.out.println("last op: " + ops.get(ops.size() - 2));
+            //   System.out.println("last token: " +last.name);
+            if (last.equals("Mul") || last.equals("Plus") || last.equals("Minus") || last.equals("L_Par")) {
+                v1 *= -1;
+                System.out.println("last op before minus: " + last_op);
+                System.out.println("ops prior last: " + ops.get(ops.size() - 2));
+                current_op = ops.get(ops.size() - 2);
             }
-            if(flip==1){
-                if ((first.equals("lit")||first.equals("id")))
-                    System.out.println("first when flips is 1: "+first );
-                    current_op=ch;
-
-
-            }
-            else if (flip == 2) {
-                current_op="Plus";
-             }
-             else if (flip >2 && flip % 2 != 0)
-             {
-               v1 *= -1;
-               System.out.println("flip 2+ reached");
-             }
         }
         }
+    }
 
     private void update(){
         signCheck();
-        if (parCheck) //if inside a parenthetical exp
+        if (ops.get(ops.size()-1).equals("(")) //if inside a parenthetical exp
         {
             updatePar();
+           // System.out.println("last op after update par is"+ops.get(ops.size()-1));
+
         }
-        else if (last_op.equals("R_Par")){
+        else if (ops.get(ops.size()-1).equals(")")){
             t = p;
             memory.replace(temp, t);
             updateTemp();
@@ -478,17 +455,19 @@ public class Lexer {
     }
 
     private void updatePar() {
-        if (current_op.equals("L_Par")) { //if it's the first number after the ( set it to p
-            p = v1;
-            memory.replace(par, p);
-        }
-        else if (current_op.equals("Plus")) {
+      //  System.out.println("current op is"+ current_op);
+       // System.out.println("last op is"+ ops.get(ops.size()-1));
+        if (consumed.get(consumed.size()-1).equals("(")) {
+                p = v1;
+                memory.replace(par, p);
+            }
+        else if (ops.get(ops.size()-1).equals("Plus")) {
             p += v1;
             memory.replace(par, p);
-        } else if (current_op.equals("Minus")) {
+        } else if (ops.get(ops.size()-1).equals("Minus")) {
             p -= v1;
             memory.replace(par, p);
-        } else if (current_op.equals("Mul")) {
+        } else if (ops.get(ops.size()-1).equals("Mul")) {
             p *= v1;
             memory.replace(par, p);
         }
