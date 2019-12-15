@@ -402,7 +402,7 @@ public class Lexer {
             int flip=0;
             String first=""; //the last token we check after looking at consec minus signs
 
-
+            //this loop never actually gets entered, need to know why
             while(ditr.hasNext() ) { //&& ch=="-"){
                 ch = ditr.next();
                 System.out.println("ch = ");
@@ -410,7 +410,9 @@ public class Lexer {
                 if (ch.equals("-")) {
                     flip += 1;
                     //first = ch;
-                } else {
+
+                }
+                else {
                     first = ch;//last_op=ch;
                     System.out.println("first= " + first);
                     if (ch.equals("*")) {
@@ -424,6 +426,7 @@ public class Lexer {
                         last_op = "R_Par";
                     break;
                 }
+                System.out.println("val of first: "+first  );
             }
             if(flip==1){
                 if ((first.equals("lit")||first.equals("id")))
