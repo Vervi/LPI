@@ -136,19 +136,20 @@ public class Lexer {
     private String current; //points to the token currently being looked at by the parser
     private String var; //the variable currently being worked on by the interpreter (ID on left side of assignment fn)
     private String current_op;
-    private Boolean parCheck = false; //check to see if parser is interpreting tokens inside a parenthentical expression
+    //private Boolean parCheck = false; //check to see if parser is interpreting tokens inside a parenthentical expression
     private int v1;
     private int v2;
     private String t_type;
 
     private int t = 0; //the value associated with temp in memory map
     private String temp = "temp";
-    private int p = 0; //the value associated with what's inside current parenthitecal operation in memory map
+    private int p = 0; //the value associated with what's inside current parenthetical operation in memory map
     private String par = "par";
 
     Stack<String> ops;
     Stack<Integer> operands;
-    Stack<String> consumed;
+    Stack<String> types_parsed;
+    //Stack<Token> parsed;
 
 
     //for readability referring to tokens by type name
@@ -183,7 +184,8 @@ public class Lexer {
         itr = tokens.iterator();
         ops =new Stack<>();
         operands=new Stack<>();
-        consumed=new Stack<>();
+        types_parsed=new Stack<>();
+      //  parsed=new Stack<>();
         next();
         memory = new HashMap<>();
         memory.put(temp, t);
@@ -196,10 +198,10 @@ public class Lexer {
         try {
             if (itr.hasNext()) {
                 input = itr.next();
-                current = input.token.intern();
+                current = input.token;
                 t_type = input.name; //token type of current token
-                consumed.push(t_type);
-
+                types_parsed.push(t_type);
+            //    parsed.push(input);
             }
         } catch (NoSuchElementException e) {
             input = null;
@@ -232,7 +234,10 @@ public class Lexer {
                 System.out.println(entry.getKey() + " = " + entry.getValue());
             });
         }
-    }
+      /*  for(Token t:parsed)
+          System.out.print(t.token +" "); */
+       }
+
 
     private void assignment() {
         //  System.out.println("enter assignment...");
@@ -405,7 +410,7 @@ public class Lexer {
 
     private void signCheck(){
 
-        String last =consumed.get(consumed.size()-2);
+        String last =types_parsed.get(types_parsed.size()-2);
        // System.out.println(last);
         if (!(last.equals("Literal")||last.equals("Identifier"))){
         if (current_op.equals("Minus") ) {
@@ -459,7 +464,7 @@ public class Lexer {
     private void updatePar() {
       //  System.out.println("current op is"+ current_op);
        // System.out.println("last op is"+ ops.get(ops.size()-1));
-        if (consumed.get(consumed.size()-1).equals("(")) {
+        if (types_parsed.get(types_parsed.size()-1).equals("(")) {
                 p = v1;
                 memory.replace(par, p);
             }
