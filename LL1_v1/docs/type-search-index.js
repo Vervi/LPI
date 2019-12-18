@@ -1,1 +1,0 @@
-typeSearchIndex = [{"p":"f19.plc.ll1","l":"Lexer"},{"p":"f19.plc.ll1","l":"Lexer.Token"},{"p":"f19.plc.ll1","l":"Lexer.TokenDatum"},{"p":"f19.plc.ll1","l":"Main"},{"p":"f19.plc.ll1","l":"ParseException"}]
