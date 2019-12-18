@@ -22,7 +22,7 @@ public class Main {
             Thread.sleep(350);
 
             System.out.println("Now, let's have some fun with parsing...");
-            Thread.sleep(6000);
+            Thread.sleep(600);
             System.out.println("please enter a series of assignments and hit ''return' key when done.");
 
             String test=sc.nextLine();
