@@ -13,7 +13,7 @@ Assingment matches ID and = then stores the string representation of ID and the 
 assignment is valid
 Program then prints out all of the valid assignments 
 
-
+special thanks to cogito learning for help in designing the lexer class.
 
 
  Comparison of original and left recursion free grammars
