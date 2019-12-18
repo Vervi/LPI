@@ -1,42 +1,10 @@
-
 package proj.plc.f19;
 
 import java.util.*;
+
 /**
- Program:
- Assignment*
-
- Assignment:
- Identifier = Exp;
-
- Exp:
- Exp + Term | Exp - Term | Term
-
- Term:
- Term * Fact | Fact
-
- Fact:
- ( Exp ) | - Fact | + Fact | Literal | Identifier
-
- Identifier:
- Letter [Letter | Digit]*
-
- Comparison of original and left recursion free grammars
-
- Program  ->  {Assignment}
- Assignment -> ID = Expr ;
- Expr -> Term EP
- EP -> + Term EP | - Term EP | Epsilon
- //	Expr ->Term + Term | Term - Term | Term
- //this tells us that expr resolves to a term
- // + & - are binary operators here
- Term -> Fact TP
- TP -> * Fact TP | Epsilon
- // Term -> Term * Fact | Fact
- //this tells us that a call to Term resolves to Fact
- Fact -> ( Expr ) | + Fact | - Fact | ID |Literal
- //+ & - are unary operators here
-
+ * Blueprint of our recursive descent parser. Each grammar rule has a corresponding method
+ * and an interpreter is built into the parser.
  */
 public class Parser {
     private HashMap<String, Integer> memory;    //holds actual completed assignments
@@ -157,7 +125,6 @@ public class Parser {
         }
     }
 
-    //start of interpreting functions
     private int expr() {
         int x = term();
         while (true) { //allows for consecutive sum/diff operations
