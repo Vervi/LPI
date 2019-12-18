@@ -5,7 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
     /**
-     * Blueprint of f19.plc.ll1.Lexer class/object
+     * Lexer blueprint
      */
     public class Lexer {
 

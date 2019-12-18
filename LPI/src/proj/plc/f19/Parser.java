@@ -56,8 +56,10 @@ public class Parser {
     /**
      * A simple function that creates an iterator for the list of tokens to be interpreted and
      * a hashmap to store intermediary computations. It initiates a call to the parser's start rule.
+     *
+     * @param tkns  a list of tokens to be parsed
+     *
      */
-
     void parse(LinkedList<Lexer.Token> tkns) {
         this.tokens = tkns;
         itr = tokens.iterator();
