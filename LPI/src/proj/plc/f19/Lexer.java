@@ -80,7 +80,7 @@ import java.util.regex.Pattern;
         }
 
         /**
-         * A helper method for adding lexical rules to our tokenizer object
+         * A helper method for adding lexical rules
          *
          * @param regex the regex
          * @param type  the type
