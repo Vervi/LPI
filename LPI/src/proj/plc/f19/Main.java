@@ -17,11 +17,10 @@ public class Main {
 
         try {
             Thread.sleep(650);
-            //lexer.tokenize("x = 001;"); //works
-            //lexer.tokenize("X_2 = 0 ;");
-             lexer.tokenize("x=0 ; y=1; z=x;");
-
-             //lexer.tokenize("s=1; y=2; x=(s); ");
+            //lexer.tokenize("x =1; y=2; z= x+y;"); //works
+            //lexer.tokenize("u=3*1; v=2*u ; w=(v+1)*1+2*2;");
+             lexer.tokenize("r =3; s=(r-1)*2; t =3*r+(s-2*r); y=r*2+(s-3*-t);");
+             //lexer.tokenize("s=1; y=2; x=3;");
         //    lexer.tokenize(test);
             tokens=lexer.getTokens();
             tokens.add(new Lexer.Token(10, "$","eoi")); //add end of input token so parser knows when to terminate

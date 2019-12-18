@@ -165,10 +165,12 @@ public class Parser {
                 case "Plus": {
                     match("Plus");
                     x += term();
+                    break;
                 }
                 case "Minus": {
                     match("Minus");
                     x -= term();
+                    break;
                 }
                 default:
                     return x;
@@ -199,7 +201,7 @@ public class Parser {
 
             case "Minus":        //unary-
                 match("Minus");
-                x = -1 * fact();
+                x = -fact();
                 break;
 
             case "Plus":        //unary+
