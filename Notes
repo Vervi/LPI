@@ -1,9 +1,11 @@
 Originally I had attempted to build the parser/interpreter using the left recursion removed version of the grammar.
 The parser worked fine but we had issues passing values appropriately to the interpreter. We had chosen to go with a 
-syntax driven interpreter as opposed to building an AST or Java bytecode. To this end we took a look at the original grammar and tried to see exactly what changes between the two versions and how it affects passing values. We noticed that in the original grammar it's much easier to deal with functions because binary and unary operations are cleanly separated. We also noticed that even though it appears that
+syntax driven interpreter as opposed to building an AST or Java bytecode. To this end we took a look at the original grammar
+and tried to see exactly what changes between the two versions and how it affects passing values. We noticed that in the
+original grammar it's much easier to deal with functions because binary and unary operations are cleanly separated. We also
+noticed that even though it appears that
 the two grammar rules (Expr and Term) that have left recursion fall into possibly endless loops, they both eventually have to
-resolve to Term and Fact respectively. So we rewrote the parser using the original grammar and the assumptions based on what we learned
-from the non left recursed version.
+resolve to Term and Fact respectively. So we rewrote the parser using the original grammar and the assumptions based on what we learned from the non left recursed version.
 
 Only Expr Term and Fact rules are involved in the interpreter. Assignment calls Expr and values are passed back and forth between the 3 functions
 until a token appears that tells it to end and return to assignment or an error is thrown
