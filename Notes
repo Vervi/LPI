@@ -1,0 +1,35 @@
+Originally I had attempted to build the parser/interpreter using the left recursion removed version of the grammar.
+The parser worked fine but we had issues passing values appropriately to the interpreter. We had chosen to go with a 
+syntax driven interpreter as opposed to building an AST or Java bytecode. To this end we took a look at the original grammar and tried to see exactly what changes between the two versions and how it affects passing values. We noticed that in the original grammar it's much easier to deal with functions because binary and unary operations are cleanly separated. We also noticed that even though it appears that
+the two grammar rules (Expr and Term) that have left recursion fall into possibly endless loops, they both eventually have to
+resolve to Term and Fact respectively. So we rewrote the parser using the original grammar and the assumptions based on what we learned
+from the non left recursed version.
+
+Only Expr Term and Fact rules are involved in the interpreter. Assignment calls Expr and values are passed back and forth between the 3 functions
+until a token appears that tells it to end and return to assignment or an error is thrown
+
+Program keeps calling assignment until the $ token is parsed to allow for the possiblity of 0 or more assignments.
+Assingment matches ID and = then stores the string representation of ID and the value returned by expr in a map then matches ; to see if the
+assignment is valid
+Program then prints out all of the valid assignments 
+
+
+
+
+ Comparison of original and left recursion free grammars
+
+ Program  :=  {Assignment}
+ Assignment := ID = Expr ;
+ Expr := Term EP
+ EP := + Term EP | - Term EP | Epsilon
+        //	Expr := Exp + Term | Exp - Term | Term
+        //this tells us that expr resolves to a term
+        // +- are binary operators here
+ Term := Fact TP
+ TP := * Fact TP | Epsilon
+        // Term := Term * Fact | Fact
+        //this tells us that a call to Term resolves to Fact
+ Fact := ( Expr ) | + Fact | - Fact | ID |Literal
+        //+- are unary operators here
+
+ 
