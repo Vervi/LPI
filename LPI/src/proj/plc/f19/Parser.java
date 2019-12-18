@@ -61,7 +61,6 @@ public class Parser {
     void parse(LinkedList<Lexer.Token> tkns) {
         this.tokens = tkns;
         itr = tokens.iterator();
-
         next();            //set iterator to first token
         memory = new HashMap<>();
         program();            //call start rule
